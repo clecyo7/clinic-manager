@@ -17,4 +17,10 @@ export default defineConfig({
             },
         }),
     ],
+    server: {
+        hmr: {
+            host: 'psicloud.up.railway.app',
+            protocol: 'wss' // WebSocket seguro
+        }
+    }
 });
