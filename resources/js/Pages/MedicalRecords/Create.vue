@@ -78,7 +78,7 @@ const submit = () => {
                             </div>
 
                             <div>
-                                <InputLabel for="diagnosis" value="Diagnóstico" />
+                                <InputLabel for="diagnosis" value="Histórico Clínico" />
                                 <textarea
                                     id="diagnosis"
                                     v-model="form.diagnosis"
@@ -90,7 +90,7 @@ const submit = () => {
                             </div>
 
                             <div>
-                                <InputLabel for="treatment_plan" value="Plano de Tratamento" />
+                                <InputLabel for="treatment_plan" value="Evolução" />
                                 <textarea
                                     id="treatment_plan"
                                     v-model="form.treatment_plan"

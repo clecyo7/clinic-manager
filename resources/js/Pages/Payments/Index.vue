@@ -5,21 +5,12 @@ import { CurrencyDollarIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/out
 import { useForm } from '@inertiajs/vue3';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import { ref } from 'vue';
+import { formatCurrency, formatDate } from '@/utils/format';
 
 const props = defineProps({
-    payments: Array
+    payments: Array,
+    statistics: Object
 });
-
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('pt-BR');
-};
-
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(value);
-};
 
 const getStatusColor = (status) => {
     const colors = {
@@ -128,7 +119,7 @@ const handleDelete = () => {
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <tr v-for="payment in payments" :key="payment.id">
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ payment.appointment.patient.name }}
+                                            {{ payment?.appointment?.patient?.name ?? 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ formatDate(payment.payment_date) }}

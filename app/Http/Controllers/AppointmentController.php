@@ -90,17 +90,35 @@ class AppointmentController extends Controller
             ->with('message', 'Consulta atualizada com sucesso!');
     }
 
-public function destroy(Appointment $appointment)
-{
-    $appointment->delete();
+    public function destroy(Appointment $appointment)
+    {
+        try {
+            // Check for related medical records
+            if ($appointment->medicalRecords()->exists()) {
+                return redirect()->back()
+                    ->with('error', 'Não é possível excluir esta consulta pois existem prontuários vinculados.');
+            }
 
-    return redirect()->route('appointments.index')
-        ->with('message', 'Consulta excluída com sucesso!');
-}
-public function history(Appointment $appointment)
-{
-    return Inertia::render('Appointments/History', [
-        'appointment' => $appointment->load(['patient', 'histories.user'])
-    ]);
-}
+            // Check for related payments
+            if ($appointment->payment()->exists()) {
+                return redirect()->back()
+                    ->with('error', 'Não é possível excluir esta consulta pois existem pagamentos vinculados.');
+            }
+
+            $appointment->delete();
+            return redirect()->route('appointments.index')
+                ->with('message', 'Consulta excluída com sucesso!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Não foi possível excluir esta consulta. Verifique se existem registros vinculados.');
+        }
+    }
+
+    public function history(Appointment $appointment)
+    {
+        return Inertia::render('Appointments/History', [
+            'appointment' => $appointment->load(['patient', 'histories.user'])
+        ]);
+    }
 }

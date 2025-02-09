@@ -1,24 +1,18 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { DocumentTextIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline';
-import { useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { PencilIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
-import { ref } from 'vue';  // Adicionando a importação do ref
+import { ref } from 'vue';
 
 const props = defineProps({
-    records: {
-        type: Array,
-        default: () => []
-    },
-    patient: {
-        type: Object,
-        default: null
-    }
+    records: Array,
+    patient: Object
 });
 
 const showDeleteModal = ref(false);
 const recordToDelete = ref(null);
+const form = useForm({});
 
 const formatDate = (date) => {
     return new Date(date).toLocaleDateString('pt-BR');
@@ -29,15 +23,17 @@ const confirmDelete = (record) => {
     showDeleteModal.value = true;
 };
 
-const deleteForm = useForm({});
-
 const handleDelete = () => {
     if (recordToDelete.value) {
-        deleteForm.delete(route('medical-records.destroy', recordToDelete.value.id), {
+        form.delete(route('medical-records.destroy', recordToDelete.value.id), {
+            preserveScroll: true,
             onSuccess: () => {
                 showDeleteModal.value = false;
                 recordToDelete.value = null;
             },
+            onError: (errors) => {
+                console.error('Erro ao excluir:', errors);
+            }
         });
     }
 };
@@ -59,7 +55,7 @@ const handleDelete = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <div v-if="medicalRecords.length === 0" class="text-center py-8 text-gray-500">
+                        <div v-if="records.length === 0" class="text-center py-8 text-gray-500">
                             Nenhum prontuário registrado.
                         </div>
                         <div v-else class="overflow-x-auto">
@@ -67,10 +63,13 @@ const handleDelete = () => {
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Paciente
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Data da Consulta
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Diagnóstico
+                                            Histórico Clínico
                                         </th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Ações
@@ -78,7 +77,10 @@ const handleDelete = () => {
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="record in medicalRecords" :key="record.id">
+                                    <tr v-for="record in records" :key="record.id">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            {{ record.appointment.patient.name }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{ formatDate(record.appointment.date_time) }}
                                         </td>

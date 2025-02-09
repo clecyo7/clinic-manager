@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import { PlusCircleIcon, PencilIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/outline';
+import { PlusCircleIcon, PencilIcon, TrashIcon, EyeIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     patients: Array
@@ -29,7 +29,7 @@ const deletePatient = () => {
 };
 
 const restorePatient = (patient) => {
-    router.put(route('patients.restore', patient.id));
+    router.post(route('patients.restore', patient.id));
 };
 
 const formatDate = (date) => {
@@ -73,8 +73,10 @@ const formatDate = (date) => {
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="patient in patients" :key="patient.id">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ patient.name }}</td>
+                                <tr v-for="patient in patients" :key="patient?.id">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {{ patient?.name || 'N/A' }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ patient.phone }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ patient.gender }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(patient.birth_date) }}</td>
@@ -94,7 +96,7 @@ const formatDate = (date) => {
                                             Ver
                                         </Link>
                                         <button
-                                            v-if="patient.status === 'active'"
+                                            v-if="!patient.deleted_at"
                                             @click="confirmPatientDeletion(patient)"
                                             class="text-red-600 hover:text-red-900 inline-flex items-center gap-1"
                                         >

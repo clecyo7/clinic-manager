@@ -6,6 +6,12 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import { 
+    UserGroupIcon,
+    CalendarIcon,
+    BanknotesIcon,
+    DocumentTextIcon,
+} from '@heroicons/vue/24/outline';
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -30,28 +36,57 @@ const showingNavigationDropdown = ref(false);
                             </div>
 
                             <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
                                 <NavLink :href="route('patients.index')" :active="route().current('patients.*')">
-        <div class="inline-flex items-center">
-            <UserGroupIcon class="h-5 w-5 mr-2" />
-            Pacientes
-        </div>
-    </NavLink>
-    <NavLink :href="route('appointments.index')" :active="route().current('appointments.*')">
-        <div class="inline-flex items-center">
-            <CalendarIcon class="h-5 w-5 mr-2" />
-            Consultas
-        </div>
-    </NavLink>
+                                    <div class="inline-flex items-center">
+                                        <UserGroupIcon class="h-5 w-5 mr-2" />
+                                        Pacientes
+                                    </div>
+                                </NavLink>
+                                <NavLink :href="route('appointments.index')" :active="route().current('appointments.*')">
+                                    <div class="inline-flex items-center">
+                                        <CalendarIcon class="h-5 w-5 mr-2" />
+                                        Consultas
+                                    </div>
+                                </NavLink>
+                                <NavLink :href="route('payments.index')" :active="route().current('payments.*')">
+                                    <div class="inline-flex items-center">
+                                        <BanknotesIcon class="h-5 w-5 mr-2" />
+                                        Pagamentos
+                                    </div>
+                                </NavLink>
+                                <NavLink :href="route('medical-records.index')" :active="route().current('medical-records.*')">
+                                    <div class="inline-flex items-center">
+                                        <DocumentTextIcon class="h-5 w-5 mr-2" />
+                                        Prontuários
+                                    </div>
+                                </NavLink>
                             </div>
+                            
+                            <!-- Responsive Navigation Menu -->
+                            <!-- Remove this duplicate responsive menu -->
+                            <!-- <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }" class="sm:hidden">
+                                <div class="space-y-1 pb-3 pt-2">
+                                    <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                        Dashboard
+                                    </ResponsiveNavLink>
+                                    <ResponsiveNavLink :href="route('patients.index')" :active="route().current('patients.*')">
+                                        Pacientes
+                                    </ResponsiveNavLink>
+                                    <ResponsiveNavLink :href="route('appointments.index')" :active="route().current('appointments.*')">
+                                        Consultas
+                                    </ResponsiveNavLink>
+                                    <ResponsiveNavLink :href="route('payments.index')" :active="route().current('payments.*')">
+                                        Pagamentos
+                                    </ResponsiveNavLink>
+                                    <ResponsiveNavLink :href="route('medical-records.index')" :active="route().current('medical-records.*')">
+                                        Prontuários
+                                    </ResponsiveNavLink>
+                                </div>
+                            </div> -->
                         </div>
 
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
@@ -158,8 +193,33 @@ const showingNavigationDropdown = ref(false);
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('patients.index')"
+                            :active="route().current('patients.*')"
+                        >
+                            Pacientes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('appointments.index')"
+                            :active="route().current('appointments.*')"
+                        >
+                            Consultas
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('payments.index')"
+                            :active="route().current('payments.*')"
+                        >
+                            Pagamentos
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('medical-records.index')"
+                            :active="route().current('medical-records.*')"
+                        >
+                            Prontuários
+                        </ResponsiveNavLink>
                     </div>
 
+                    <!-- Rest of the responsive menu... -->
                     <!-- Responsive Settings Options -->
                     <div
                         class="border-t border-gray-200 pb-1 pt-4"

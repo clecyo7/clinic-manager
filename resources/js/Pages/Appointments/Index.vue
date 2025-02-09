@@ -16,9 +16,49 @@ import {
     CalendarIcon,
     UserIcon
 } from '@heroicons/vue/24/outline';
+import { XCircleIcon, CheckCircleIcon } from '@heroicons/vue/24/solid';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
 
 const props = defineProps({
-    appointments: Array
+    appointments: {
+        type: Array,
+        default: () => []
+    }
+});
+
+const search = ref('');
+const statusFilter = ref('all');
+const dateFilter = ref('all');
+const confirmingDeletion = ref(false);
+const appointmentToDelete = ref(null);
+
+const filteredAppointments = computed(() => {
+    if (!props.appointments) return [];
+    
+    return props.appointments.filter(appointment => {
+        if (!appointment || !appointment.patient) return false;
+        
+        const matchesSearch = appointment.patient.name.toLowerCase().includes(search.value.toLowerCase());
+        const matchesStatus = statusFilter.value === 'all' || appointment.status === statusFilter.value;
+        const today = new Date();
+        const appointmentDate = new Date(appointment.date_time);
+
+        let matchesDate = true;
+        if (dateFilter.value === 'today') {
+            matchesDate = appointmentDate.toDateString() === today.toDateString();
+        } else if (dateFilter.value === 'week') {
+            const weekAhead = new Date(today);
+            weekAhead.setDate(today.getDate() + 7);
+            matchesDate = appointmentDate >= today && appointmentDate <= weekAhead;
+        } else if (dateFilter.value === 'month') {
+            matchesDate = appointmentDate.getMonth() === today.getMonth() && 
+                         appointmentDate.getFullYear() === today.getFullYear();
+        }
+
+        return matchesSearch && matchesStatus && matchesDate;
+    });
 });
 
 const formatDateTime = (dateTime) => {
@@ -41,10 +81,6 @@ const getStatusColor = (status) => {
     return colors[status] || 'bg-gray-100 text-gray-800';
 };
 
-// Corrigir nome da ref para manter consistência
-const confirmingDeletion = ref(false);
-const appointmentToDelete = ref(null);
-
 const confirmDelete = (appointment) => {
     appointmentToDelete.value = appointment;
     confirmingDeletion.value = true;
@@ -56,41 +92,81 @@ const deleteAppointment = () => {
             confirmingDeletion.value = false;
             appointmentToDelete.value = null;
         },
+        onError: (errors) => {
+            confirmingDeletion.value = false;
+            appointmentToDelete.value = null;
+        },
+        preserveScroll: true,
+        preserveState: true
     });
 };
-
-const search = ref('');
-const statusFilter = ref('all');
-const dateFilter = ref('all');
-
-const filteredAppointments = computed(() => {
-    return props.appointments.filter(appointment => {
-        const matchesSearch = appointment.patient.name.toLowerCase().includes(search.value.toLowerCase());
-        const matchesStatus = statusFilter.value === 'all' || appointment.status === statusFilter.value;
-        const today = new Date();
-        const appointmentDate = new Date(appointment.date_time);
-
-        let matchesDate = true;
-        if (dateFilter.value === 'today') {
-            matchesDate = appointmentDate.toDateString() === today.toDateString();
-        } else if (dateFilter.value === 'week') {
-            const weekAhead = new Date(today);
-            weekAhead.setDate(today.getDate() + 7);
-            matchesDate = appointmentDate >= today && appointmentDate <= weekAhead;
-        } else if (dateFilter.value === 'month') {
-            matchesDate = appointmentDate.getMonth() === today.getMonth() && 
-                         appointmentDate.getFullYear() === today.getFullYear();
-        }
-
-        return matchesSearch && matchesStatus && matchesDate;
-    });
-});
 </script>
 
 <template>
     <Head title="Consultas" />
 
     <AuthenticatedLayout>
+        <!-- Update flash message handling -->
+        <div v-if="$page?.props?.flash?.error" class="max-w-7xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
+            <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <XCircleIcon class="h-5 w-5 text-red-400" />
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">
+                            {{ $page?.props?.flash?.error }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="$page?.props?.flash?.message" class="max-w-7xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
+            <div class="bg-green-50 border-l-4 border-green-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <CheckCircleIcon class="h-5 w-5 text-green-400" />
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-green-700">
+                            {{ $page?.props?.flash?.message }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="page.props.flash?.error" class="max-w-7xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
+            <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <XCircleIcon class="h-5 w-5 text-red-400" />
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">
+                            {{ page.props.flash.error }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="page.props.flash?.message" class="max-w-7xl mx-auto mt-6 px-4 sm:px-6 lg:px-8">
+            <div class="bg-green-50 border-l-4 border-green-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <CheckCircleIcon class="h-5 w-5 text-green-400" />
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-green-700">
+                            {{ $page?.props?.flash?.message }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">Consultas</h2>
@@ -174,7 +250,7 @@ const filteredAppointments = computed(() => {
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <tr v-for="appointment in filteredAppointments" :key="appointment.id">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        {{ appointment.patient.name }}
+                                        {{ appointment?.patient?.name || 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         {{ formatDateTime(appointment.date_time) }}

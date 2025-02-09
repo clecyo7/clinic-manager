@@ -27,4 +27,14 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'psychologist_id');
     }
+
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
 }

@@ -29,18 +29,9 @@ class MedicalRecord extends Model implements HasMedia
         return $this->belongsTo(Appointment::class);
     }
 
-    protected $with = ['patient', 'appointment'];
-
-    protected $appends = ['attachments'];
-
-    public function getAttachmentsAttribute()
+    public function registerMediaCollections(): void
     {
-        return $this->getMedia('attachments')->map(function ($media) {
-            return [
-                'id' => $media->id,
-                'name' => $media->file_name,
-                'url' => $media->getUrl()
-            ];
-        });
+        $this->addMediaCollection('attachments')
+            ->useDisk('public');
     }
 }
