@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.slogan {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
