@@ -63,7 +63,7 @@ class DashboardController extends Controller
     {
         return Appointment::where('psychologist_id', auth()->id())
             ->select(
-                DB::raw("strftime('%m', date_time) as month"),
+                DB::raw('MONTH(date_time) as month'),
                 DB::raw('COUNT(*) as total')
             )
             ->whereYear('date_time', Carbon::now()->year)
@@ -77,7 +77,7 @@ class DashboardController extends Controller
     private function getMonthlyRevenues()
     {
         return Payment::select(
-                DB::raw("strftime('%m', created_at) as month"),
+                DB::raw('MONTH(created_at) as month'),
                 DB::raw('SUM(amount) as total')
             )
             ->whereYear('created_at', Carbon::now()->year)

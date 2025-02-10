@@ -15,8 +15,7 @@ class AppointmentController extends Controller
         return Inertia::render('Appointments/Index', [
             'appointments' => Appointment::with('patient')
                 ->where('psychologist_id', auth()->id())
-                ->orderBy('date')
-                ->orderBy('start_time')
+                ->orderBy('date_time')
                 ->get()
         ]);
     }
